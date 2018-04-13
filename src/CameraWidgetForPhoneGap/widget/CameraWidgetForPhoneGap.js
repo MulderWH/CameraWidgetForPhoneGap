@@ -111,6 +111,7 @@ require([
 
         _getPicture: function() {
             var self = this;
+			this.pid = window.mx.ui.showProgress(); // show progress dialog
 
             if (!navigator.camera) {
                 window.mx.ui.error("Unable to detect camera.");
@@ -141,6 +142,7 @@ require([
             function error(e) {
                 if (typeof e.code !== "undefined") {
                     window.mx.ui.error("Retrieving image from camera failed with error code " + e.code);
+					window.mx.ui.hideProgress(self.pid);  // hide it again
                 }
             }
         },
@@ -203,6 +205,7 @@ require([
 
             function error(e) {
                 window.mx.ui.error("Uploading image failed with error code " + e.code);
+				window.mx.ui.hideProgress(self.pid);  // hide it again
             }
         },
 
@@ -238,6 +241,8 @@ require([
         },
 
         _executeMicroflow: function() {
+			var self = this;
+			
             if (this.onchangemf && this._contextObj) {
                 window.mx.data.action({
                     params: {
@@ -246,12 +251,16 @@ require([
                         guids: [ this._contextObj.getGuid() ]
                     },
                     callback: function(objs) {
+						window.mx.ui.hideProgress(self.pid);  // hide it again
                         //ok
                     },
                     error: function(e) {
                         console.warn("Error running microflow: ", e);
+						window.mx.ui.hideProgress(self.pid);  // hide it again
                     }
                 });
+            } else {
+                window.mx.ui.hideProgress(self.pid);  // hide it again
             }
         }
     });
